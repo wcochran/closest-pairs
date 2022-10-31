@@ -64,7 +64,7 @@ void closestPairsBruteForce(const std::vector<P>& points,
                             std::vector<std::pair<size_t,size_t>>& closestPairIndices,
                             std::vector<F>& squaredDistances) {
     const size_t N = points.size();
-    if (N <= 2) return; // nada
+    if (N < 2) return; // nada
     assert(K >= 1);
     std::vector<std::pair<size_t,size_t>> pairs;
     std::vector<F> distances;
@@ -214,7 +214,7 @@ void closestPairsXSorted(const std::vector<P>& points,
     using namespace ClosestPairsAux;
 
     const size_t N = points.size();
-    if (N <= 0) return; // nada
+    if (N < 2) return; // nada
     assert(K >= 1);
 
     //
