@@ -12,6 +12,7 @@
 #include <map>
 #include <algorithm>
 #include <numeric>
+#include <limits>
 #include <cmath>
 #include <Eigen/Dense>
 
@@ -243,13 +244,6 @@ void closestPairsXSorted(const std::vector<P>& points,
     //
     std::vector<std::pair<size_t,size_t>> leftPairIndices;
     std::vector<F> leftSquaredDistances;
-    assert(!leftPoints.empty());
-    if (rightPoints.empty()) { // degenerate case where all points on x == xmid line
-        // We'll just punt and use brute force for now hoping this is a rare case.
-        // We could handle this quite efficiently, but not going to bother.
-        closestPairsBruteForce(points, K, closestPairIndices, squaredDistances);
-        return;
-    }
     closestPairsXSorted(leftPoints, K, leftPairIndices, leftSquaredDistances);
 
     //
@@ -277,7 +271,8 @@ void closestPairsXSorted(const std::vector<P>& points,
     //
     // d = largest distance of closest pair from each half;
     //
-    const float d2 = distances.back();
+    constexpr float infinity = std::numeric_limits<float>::max();
+    const float d2 = distances.empty() ? infinity : distances.back();
     const float d = std::sqrt(d2);
 
     //
@@ -460,13 +455,6 @@ void closestPairsXSorted(const std::vector<P>& A,
     //
     std::vector<std::pair<size_t,size_t>> leftPairIndices;
     std::vector<F> leftSquaredDistances;
-    // XXXX assert(!Aleft.empty() && !Bleft.empty());
-    if (Aright.empty() && Bright.empty()) {
-        // degenerate case when all points are on the x == xmid line
-        // We will just use brute for now (even though we can do this efficiently).
-        closestPairsBruteForce(A, B, K, closestPairIndices, squaredDistances);
-        return;
-    }
     closestPairsXSorted(Aleft, Bleft, K, leftPairIndices, leftSquaredDistances);
 
     //
@@ -474,9 +462,7 @@ void closestPairsXSorted(const std::vector<P>& A,
     //
     std::vector<std::pair<size_t,size_t>> rightPairIndices;
     std::vector<F> rightSquaredDistances;
-    if (!Aright.empty() || !Bright.empty()) {
-        closestPairsXSorted(Aright, Bright, K, rightPairIndices, rightSquaredDistances);
-    }
+    closestPairsXSorted(Aright, Bright, K, rightPairIndices, rightSquaredDistances);
     const size_t Nleft = Aleft.size();
     const size_t Mleft = Bleft.size();
     for (auto& indices : rightPairIndices) {
@@ -497,7 +483,8 @@ void closestPairsXSorted(const std::vector<P>& A,
     //
     // d = largest distance of closest pair from each half;
     //
-    const float d2 = distances.back();
+    constexpr float infinity = std::numeric_limits<float>::max();
+    const float d2 = distances.empty() ? infinity : distances.back();
     const float d = std::sqrt(d2);
 
     //
